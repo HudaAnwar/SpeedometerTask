@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<font-family xmlns:android="http://schemas.android.com/apk/res/android">
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="400"
+        android:font="@font/digital" />
+    <font
+        android:fontStyle="italic"
+        android:fontWeight="400"
+        android:font="@font/digital_italic" />
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="400"
+        android:font="@font/digital_mono" />
+    <font
+        android:fontStyle="italic"
+        android:fontWeight="400"
+        android:font="@font/digital_mono_italic" />
+</font-family>

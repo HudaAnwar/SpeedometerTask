@@ -3,20 +3,115 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@android:color/black"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     tools:context=".MainActivity">
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignParentTop="true"
-    android:textColor="@color/colorPrimaryDark"
-    android:layout_centerHorizontal="true"
-    android:layout_marginTop="50dp"
-    android:textSize="150sp"
-    android:text="0.0"
-    android:fontFamily="serif-monospace"
-    />
 
+    <TextView
+        android:id="@+id/txt_curr_speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:fontFamily="@font/digital"
+        android:text="Current Speed"
+        android:textColor="#FF22C7"
+        android:textSize="35sp"
+        android:textStyle="bold" />
 
+    <TextView
+        android:id="@+id/speed_meter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txt_curr_speed"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/digital"
+        android:text="0.0"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="120sp" />
+
+    <TextView
+        android:id="@+id/kmh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/speed_meter"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/digital"
+        android:text="kmh"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="30sp" />
+
+    <TextView
+        android:id="@+id/txtspeed_range_inc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/kmh"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:fontFamily="@font/digital"
+        android:text="From 10 to 30"
+        android:textColor="#FF22C7"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/calc_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtspeed_range_inc"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/digital"
+        android:text="0"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="75sp" />
+
+    <TextView
+        android:id="@+id/sec"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/calc_time"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/digital"
+        android:text="Seconds"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="25sp" />
+    <TextView
+        android:id="@+id/txtspeed_range_dec"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sec"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:fontFamily="@font/digital"
+        android:text="From 30 to 10"
+        android:textColor="#FF22C7"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/calc_time_dec"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtspeed_range_dec"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/digital"
+        android:text="0"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="75sp" />
+
+    <TextView
+        android:id="@+id/sec_dec"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/calc_time_dec"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/digital"
+        android:text="Seconds"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="25sp" />
 </RelativeLayout>
