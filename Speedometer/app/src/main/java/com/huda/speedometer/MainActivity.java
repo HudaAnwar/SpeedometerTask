@@ -1,6 +1,7 @@
 package com.huda.speedometer;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -9,17 +10,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,47 +29,49 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.text.DecimalFormat;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final int PERMISSION_ID = 1;
     FusedLocationProviderClient mFusedLocationClient;
+    private long firstTime = 0;
+    private boolean from10to30 = false;
     private double longitude;
     private double latitude;
     private Thread thread;
     private float speed;
     private static final String TAG = "MainActivity";
-    private TextView txtSpeed;
+    private TextView txtSpeed, speedInc, speedDec;
+    private boolean stopThread = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         txtSpeed = findViewById(R.id.speed_meter);
+        speedInc = findViewById(R.id.calc_time);
+        speedDec = findViewById(R.id.calc_time_dec);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         getLastLocation();
     }
 
     @Override
     protected void onResume() {
+
         super.onResume();
+        stopThread = false;
         if (checkPermissions()) {
             getLastLocation();
 
-             thread = new Thread() {
+            thread = new Thread() {
                 @Override
                 public void run() {
                     try {
-                        while (!thread.isInterrupted()) {
+                        while (!stopThread) {
                             Thread.sleep(1000);
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     getLastLocation();
-
-                                    txtSpeed.setText(new DecimalFormat("###.##").format(speed));
-
-                                    Log.d(TAG, "speed: "+new DecimalFormat("###.##").format(speed));
-//                                    Toast.makeText(MainActivity.this, "longitude = " + longitude + "," + "latitude = " + latitude, Toast.LENGTH_LONG).show();
                                 }
                             });
                         }
@@ -125,17 +124,46 @@ public class MainActivity extends AppCompatActivity {
             if (isLocationEnabled()) {
                 mFusedLocationClient.getLastLocation().addOnCompleteListener(
                         new OnCompleteListener<Location>() {
+                            @RequiresApi(api = Build.VERSION_CODES.O)
                             @Override
                             public void onComplete(@NonNull Task<Location> task) {
                                 Location location = task.getResult();
-                                requestNewLocationData();
-//                                } else {
-//                                latitude = location.getLatitude();
-//                                longitude = location.getLongitude();
-                                speed = location.getSpeed();
-////                                    latTextView.setText(location.getLatitude()+"");
-////                                    lonTextView.setText(location.getLongitude()+"");
-//                                }
+                                if (location != null) {
+                                    requestNewLocationData();
+                                    speed = location.getSpeed();
+                                    String d = new DecimalFormat("##.##").format(speed * 3.6);
+                                    float dFloat = Float.parseFloat(d);
+                                    int speedInt = (int) dFloat;
+                                    if (dFloat == 0) {
+                                        txtSpeed.setText("0.0");
+                                    } else {
+                                        txtSpeed.setText(d);
+                                    }
+                                    if (firstTime == 0) {
+                                        if (speedInt == 10) {
+                                            firstTime = location.getTime();
+                                            from10to30 = true;
+                                        }
+
+                                        if (speedInt == 30) {
+                                            firstTime = location.getTime();
+                                            from10to30 = false;
+                                        }
+                                    } else {
+                                        if (from10to30) {
+                                            if (speedInt == 30) {
+                                                speedInc.setText(String.valueOf((location.getTime() - firstTime) / 1000));
+                                            }
+                                        } else {
+                                            if (speedInt == 10) {
+                                                speedInc.setText(String.valueOf((location.getTime() - firstTime) / 1000));
+
+                                            }
+                                        }
+                                        firstTime = 0;
+                                    }
+                                    Log.d(TAG, "speed: " + new DecimalFormat("##.##").format(speed * 3.6));
+                                }
                             }
                         }
                 );
@@ -175,5 +203,9 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopThread = true;
+    }
 }
