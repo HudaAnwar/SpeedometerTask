@@ -31,12 +31,14 @@ import com.google.android.gms.tasks.Task;
 import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity {
+    private Location oldLocation;
+    private long oldTime;
     private static final int PERMISSION_ID = 1;
     FusedLocationProviderClient mFusedLocationClient;
     private long firstTime = 0;
     private boolean from10to30 = false;
     private Thread thread;
-    private float speed;
+    private float speed = 0;
     private static final String TAG = "MainActivity";
     private TextView txtSpeed, speedInc, speedDec;
     private boolean stopThread = false;
@@ -63,18 +65,20 @@ public class MainActivity extends AppCompatActivity {
             thread = new Thread() {
                 @Override
                 public void run() {
-                    try {
-                        while (!stopThread) {
-                            Thread.sleep(1000);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    getLastLocation();
-                                }
-                            });
-                        }
-                    } catch (InterruptedException e) {
+
+//                    try {
+                    while (!stopThread) {
+//                            Thread.sleep(1);
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+                        getLastLocation();
+//                                }
+//                            });
                     }
+//                    } catch (InterruptedException e) {
+//
+//                    }
                 }
             };
 
@@ -128,47 +132,7 @@ public class MainActivity extends AppCompatActivity {
                                 Location location = task.getResult();
                                 if (location != null) {
                                     requestNewLocationData();
-                                    speed = location.getSpeed();
-                                    String d = new DecimalFormat("##.##").format(speed * 3.6);
-                                    float dFloat = Float.parseFloat(d);
-                                    int speedInt = (int) dFloat;
-                                    if (dFloat == 0) {
-                                        txtSpeed.setText("0.0");
-                                    } else {
-                                        txtSpeed.setText(d);
-                                    }
-                                    Log.d(TAG, "onComplete: "+firstTime);
-                                    Log.d(TAG, "onComplete: "+speedInt);
-                                    if (firstTime == 0) {
-                                        if (speedInt == 10) {
-
-                                            firstTime = location.getTime();
-                                            from10to30 = true;
-                                            Log.d(TAG, "from10to30: "+from10to30);
-                                        }
-
-                                        if (speedInt == 30) {
-                                            firstTime = location.getTime();
-                                            from10to30 = false;
-                                            Log.d(TAG, "from10to30: "+from10to30);
-                                        }
-                                    } else {
-                                        if (from10to30) {
-                                            if (speedInt == 30) {
-                                                speedInc.setText(String.valueOf((location.getTime() - firstTime) / 1000));
-                                                Log.d(TAG, "seconds: "+String.valueOf((location.getTime() - firstTime) / 1000));
-                                            }
-                                        } else {
-                                            if (speedInt == 10) {
-                                                speedDec.setText(String.valueOf((location.getTime() - firstTime) / 1000));
-                                                Log.d(TAG, "seconds: "+String.valueOf((location.getTime() - firstTime) / 1000));
-
-                                            }
-                                        }
-                                        firstTime = 0;
-                                        Log.d(TAG, "onComplete: "+firstTime);
-                                    }
-                                    Log.d(TAG, "speed: " + new DecimalFormat("##.##").format(speed * 3.6));
+                                   calcSpeed(location);
                                 }
                             }
                         }
@@ -204,9 +168,56 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             Location mLastLocation = locationResult.getLastLocation();
-            speed=mLastLocation.getSpeed();
+//            speed = mLastLocation.getSpeed() * 3.6f;
+            calcSpeed(mLastLocation);
         }
     };
+
+    private void calcSpeed(Location location) {
+        speed = location.getSpeed() * 3.6f;
+        String d = new DecimalFormat("##.##").format(speed);
+        float dFloat = Float.parseFloat(d);
+        int speedInt = (int) dFloat;
+        if (!d.contains(".")) {
+            txtSpeed.setText(d + ".0");
+        } else {
+            txtSpeed.setText(d);
+        }
+
+        Log.d(TAG, "onComplete: " + firstTime);
+        Log.d(TAG, "onComplete: " + speedInt);
+        if (firstTime == 0) {
+            if (speedInt == 10) {
+
+                firstTime = (System.currentTimeMillis() / 1000);
+                from10to30 = true;
+                Log.d(TAG, "from10to30: " + from10to30);
+            }
+
+            if (speedInt == 30) {
+                firstTime = (System.currentTimeMillis() / 1000);
+                from10to30 = false;
+                Log.d(TAG, "from10to30: " + from10to30);
+            }
+        } else {
+            if (from10to30) {
+                if (speedInt == 30) {
+                    speedInc.setText(String.valueOf(((System.currentTimeMillis() / 1000) - firstTime)));
+                    Log.d(TAG, "seconds: " + String.valueOf(((System.currentTimeMillis() / 1000) - firstTime)));
+                }
+            } else {
+                if (speedInt == 10) {
+                    speedDec.setText(String.valueOf(((System.currentTimeMillis() / 1000) - firstTime)));
+                    Log.d(TAG, "seconds: " + String.valueOf(((System.currentTimeMillis() / 1000) - firstTime)));
+
+                }
+            }
+            firstTime = 0;
+            Log.d(TAG, "onComplete: " + firstTime);
+        }
+        Log.d(TAG, "speed: " + new DecimalFormat("##.##").format(speed));
+
+    }
 
     @Override
     protected void onPause() {
