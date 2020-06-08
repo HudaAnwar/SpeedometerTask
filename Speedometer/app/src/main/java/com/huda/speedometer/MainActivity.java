@@ -35,8 +35,6 @@ public class MainActivity extends AppCompatActivity {
     FusedLocationProviderClient mFusedLocationClient;
     private long firstTime = 0;
     private boolean from10to30 = false;
-    private double longitude;
-    private double latitude;
     private Thread thread;
     private float speed;
     private static final String TAG = "MainActivity";
@@ -206,8 +204,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             Location mLastLocation = locationResult.getLastLocation();
-            latitude = mLastLocation.getLatitude();
-            longitude = mLastLocation.getLongitude();
             speed=mLastLocation.getSpeed();
         }
     };
