@@ -139,28 +139,36 @@ public class MainActivity extends AppCompatActivity {
                                     } else {
                                         txtSpeed.setText(d);
                                     }
+                                    Log.d(TAG, "onComplete: "+firstTime);
+                                    Log.d(TAG, "onComplete: "+speedInt);
                                     if (firstTime == 0) {
                                         if (speedInt == 10) {
+
                                             firstTime = location.getTime();
                                             from10to30 = true;
+                                            Log.d(TAG, "from10to30: "+from10to30);
                                         }
 
                                         if (speedInt == 30) {
                                             firstTime = location.getTime();
                                             from10to30 = false;
+                                            Log.d(TAG, "from10to30: "+from10to30);
                                         }
                                     } else {
                                         if (from10to30) {
                                             if (speedInt == 30) {
                                                 speedInc.setText(String.valueOf((location.getTime() - firstTime) / 1000));
+                                                Log.d(TAG, "seconds: "+String.valueOf((location.getTime() - firstTime) / 1000));
                                             }
                                         } else {
                                             if (speedInt == 10) {
-                                                speedInc.setText(String.valueOf((location.getTime() - firstTime) / 1000));
+                                                speedDec.setText(String.valueOf((location.getTime() - firstTime) / 1000));
+                                                Log.d(TAG, "seconds: "+String.valueOf((location.getTime() - firstTime) / 1000));
 
                                             }
                                         }
                                         firstTime = 0;
+                                        Log.d(TAG, "onComplete: "+firstTime);
                                     }
                                     Log.d(TAG, "speed: " + new DecimalFormat("##.##").format(speed * 3.6));
                                 }
@@ -200,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
             Location mLastLocation = locationResult.getLastLocation();
             latitude = mLastLocation.getLatitude();
             longitude = mLastLocation.getLongitude();
+            speed=mLastLocation.getSpeed();
         }
     };
 
